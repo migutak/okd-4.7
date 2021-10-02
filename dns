@@ -1,0 +1,56 @@
+cat << EOF > /etc/dnsmasq.d/ocp.conf
+# Common Config
+bind-interfaces
+interface=lo,ens192
+dhcp-option=option:router,169.60.247.97
+dhcp-option=option:dns-server,169.60.247.105
+dhcp-range=169.60.247.106,169.60.247.109
+resolv-file=/etc/resolv.dnsmasq.conf
+
+# PXE
+dhcp-boot=pxelinux.0
+enable-tftp
+tftp-root=/var/lib/tftpboot
+
+# Cluster end-points:
+# Master api server DNS record
+address=/api-int.ocp.ibm.local/169.60.247.110
+address=/api.ocp.ibm.local/169.60.247.110
+
+# ETCD DNS records
+address=/etcd-0.ocp.ibm.local/169.60.247.107
+srv-host=_etcd-server-ssl._tcp.ocp.ibm.local,etcd-0.ocp.ibm.local,2380
+address=/etcd-1.ocp.ibm.local/169.60.247.108
+srv-host=_etcd-server-ssl._tcp.ocp.ibm.local,etcd-1.ocp.ibm.local,2380
+address=/etcd-2.ocp.ibm.local/169.60.247.109
+srv-host=_etcd-server-ssl._tcp.ocp.ibm.local,etcd-2.ocp.ibm.local,2380
+
+# Router wildcard DNS record
+address=/.apps.ocp.ibm.local/169.60.247.104
+
+# Node specific config
+# Bootstrap
+dhcp-host=02:00:00:00:00:01,169.60.247.106
+address=/bootstrap.ocp.ibm.local/169.60.247.106
+ptr-record=106.247.60.169.in-addr.arpa,bootstrap.ocp.ibm.local
+
+# master1
+dhcp-host=02:00:00:00:00:02,169.60.247.107
+address=/master1.ocp.ibm.local/169.60.247.107
+ptr-record=107.247.60.169.in-addr.arpa,master1.ocp.ibm.local
+
+# master2
+dhcp-host=02:00:00:00:00:03,169.60.247.108
+address=/master2.ocp.ibm.local/169.60.247.108
+ptr-record=108.247.60.169.in-addr.arpa,master2.ocp.ibm.local
+
+# master3
+dhcp-host=02:00:00:00:00:04,169.60.247.109
+address=/master3.ocp.ibm.local/169.60.247.109
+ptr-record=109.247.60.169.in-addr.arpa,master3.ocp.ibm.local
+
+# worker1
+dhcp-host=02:00:00:00:00:05,169.60.247.103
+address=/worker1.ocp.ibm.local/169.60.247.103
+ptr-record=103.247.60.169.in-addr.arpa,worker1.ocp.ibm.local
+EOF
